@@ -1,0 +1,112 @@
+{% extends 'main.html' %} {% block body %}
+
+<!-- ======= Header ======= -->
+<header id="header-signin" class="fixed-top">
+  <div class="container d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/" class="logo1"
+        ><img src="../static/assets/img/logo.png" alt="" class="img-fluid"
+      /></a>
+      <h1 class="logo1"><a href="/">FORSEER</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+    </div>
+  </div>
+</header>
+
+<!-- ======= SignIn Form ======= -->
+
+<div class="content" style="padding-top: 7rem">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <img
+          src="../static/assets/img/undraw_remotely_2j6y.svg"
+          alt="Image"
+          class="img-fluid"
+        />
+      </div>
+      <div class="col-md-6 contents" style="margin-top: 5%;">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="mb-4">
+              <h3>Sign In</h3>
+              
+            </div>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="input-control-user">
+              {% for message in messages %}
+              <div class="error">{{ message }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            
+            <form id="form" method="POST" action="/signin">
+              
+              <div class="input-control">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" />
+                <div class="error" id="email-error"></div>
+              </div>
+              <div class="input-control">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" />
+                <div class="error" id="password-error"></div>
+              </div>
+              
+              <button type="submit" id="submit" class="btn btn-block btn-primary bclr" style="margin-top: 15px">
+                Login
+              </button>
+            </form>
+
+            <p class="loginhere" style="padding-left: 3%;">
+              Don't have an account ?<a href="/signup" class="loginhere-link"> Sign Up</a>
+          </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.querySelector('#form');
+  const emailInput = document.querySelector('#email');
+  const passwordInput = document.querySelector('#password');
+  const usernameError = document.querySelector('#username-error');
+  const emailError = document.querySelector('#email-error');
+  const passwordError = document.querySelector('#password-error');
+
+  function validateForm() {
+    let valid = true;
+
+
+    if (!emailInput.value) {
+      emailError.innerText = 'Please enter an email address';
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(emailInput.value)) {
+      emailError.innerText = 'Please enter a valid email address';
+      valid = false;
+    } else {
+      emailError.innerText = '';
+    }
+
+    if (!passwordInput.value) {
+      passwordError.innerText = 'Please enter a password';
+      valid = false;
+    } else {
+      passwordError.innerText = '';
+    }
+
+    return valid;
+  }
+
+  form.addEventListener('submit', (event) => {
+    if (!validateForm()) {
+      event.preventDefault();
+    }
+  });
+</script>
+{% endblock %}

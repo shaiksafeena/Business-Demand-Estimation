@@ -1,0 +1,32 @@
+df=pd.read_csv("sales_data.csv",parse_dates = True, index_col="Month")
+            import matplotlib.pyplot as plt
+            from statsmodels.tsa.stattools import adfuller
+            adfuller(df)
+            df_diff = df.diff().dropna()
+            adfuller(df_diff)
+            from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+            plot_acf(df_diff, lags = 100, zero = False)
+            import pmdarima as pm
+            results = pm.auto_arima(df, seasonal = True, m = 12, d = 1, D = 1, information_criterion = "bic", trace = True, error_action = "ignore", n_fits = 100, stepwise = True)            
+            from pmdarima.model_selection import train_test_split
+            train, test = train_test_split(df, test_size =0.1)
+            prediction = pd.DataFrame(results.predict(n_periods = 59), test.index)
+            prediction.columns = ["predicted_sales"]
+            test["predicted_sales"] = prediction
+            plt.plot(train, label = "Training")
+            plt.plot(test, label = "Testing")
+            plt.plot(prediction, label = "Prediction")
+            plt.legend()
+            from pandas.tseries.offsets import DateOffset
+            future_dates = [df.index[-1] + DateOffset(months = x) for x in range(0,60)]
+            future_date_df = pd.DataFrame(index = future_dates[1:],columns = df.columns)
+            future_date_df["forecast"] = results.predict(n_periods = 59,dynamic  = True )
+            future_df = pd.concat([df,future_date_df])
+            future_df.plot()
+            plt.title('Laptop Sales Prediction')
+            plt.xlabel('Year')
+            plt.ylabel('Sales')
+            fig4 = plt.gcf()
+            plt.show()
+
+            fig4.savefig("static/graph4.png")

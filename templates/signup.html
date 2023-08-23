@@ -1,0 +1,133 @@
+{% extends 'main.html' %} {% block body %}
+
+<!-- ======= Header ======= -->
+<header id="header-signin" class="fixed-top">
+  <div class="container d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/" class="logo1"><img src="../static/assets/img/logo.png" alt="" class="img-fluid" /></a>
+      <h1 class="logo1"><a href="/">FORSEER</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+    </div>
+  </div>
+</header>
+
+<!-- ======= SignIn Form ======= -->
+
+<div class="content" style="padding-top: 7rem">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <img src="../static/assets/img/undraw_remotely_2j6y.svg" alt="Image" class="img-fluid" />
+      </div>
+      <div class="col-md-6 contents">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="mb-4">
+              <h3>Sign Up</h3>
+
+            </div>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="input-control-user">
+              {% for message in messages %}
+              <div class="error">{{ message }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form id="form" method="POST" action="/signup">
+              <div class="input-control">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" />
+                <div class="error" id="username-error"></div>
+              </div>
+              <div class="input-control">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" />
+                <div class="error" id="email-error"></div>
+              </div>
+              <div class="input-control">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" />
+                <div class="error" id="password-error"></div>
+              </div>
+              <div class="input-control">
+                <label for="password2">Confirm password</label>
+                <input id="password2" name="password2" type="password">
+                <div class="error" id="password2-error"></div>
+              </div>
+              <button type="submit" id="submit" class="btn btn-block btn-primary bclr" style="margin-top: 15px">
+                Create account
+              </button>
+            </form>
+
+            <p class="loginhere">&nbsp;&nbsp;&nbsp;Already have an account ?<a href="/signin" class="loginhere-link">
+                Log in</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.querySelector('#form');
+  const usernameInput = document.querySelector('#username');
+  const emailInput = document.querySelector('#email');
+  const passwordInput = document.querySelector('#password');
+  const password2Input = document.querySelector('#password2');
+  const usernameError = document.querySelector('#username-error');
+  const emailError = document.querySelector('#email-error');
+  const passwordError = document.querySelector('#password-error');
+  const password2Error = document.querySelector('#password2-error');
+
+  function validateForm() {
+    let valid = true;
+
+    if (!usernameInput.value) {
+      usernameError.innerText = 'Please enter a username';
+      valid = false;
+    } else {
+      usernameError.innerText = '';
+    }
+
+    if (!emailInput.value) {
+      emailError.innerText = 'Please enter an email address';
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(emailInput.value)) {
+      emailError.innerText = 'Please enter a valid email address';
+      valid = false;
+    } else {
+      emailError.innerText = '';
+    }
+
+    if (!passwordInput.value) {
+      passwordError.innerText = 'Please enter a password';
+      valid = false;
+    } else {
+      passwordError.innerText = '';
+    }
+
+    if (!password2Input.value) {
+      password2Error.innerText = 'Please confirm your password';
+      valid = false;
+    } else if (password2Input.value !== passwordInput.value) {
+      password2Error.innerText = 'Passwords do not match';
+      valid = false;
+    } else {
+      password2Error.innerText = '';
+    }
+
+    return valid;
+  }
+
+  form.addEventListener('submit', (event) => {
+    if (!validateForm()) {
+      event.preventDefault();
+    }
+  });
+</script>
+
+{% endblock %}

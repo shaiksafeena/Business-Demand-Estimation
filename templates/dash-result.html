@@ -1,0 +1,461 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="pagetitle">
+    <h1>Prediction of Demand</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item">Forcast</li>
+            <li class="breadcrumb-item active">Demand</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+<section class="section">
+    <div class="row">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+
+        <!-- Diffusion Curve Starts -->
+        <div class="col-lg-6" style="padding: 1px;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Diffusion Curve</h5>
+
+                    <!-- Line Chart -->
+                    <div id="diffusionChart"></div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+                            const chartData = {
+                                x: {{ diffusionData['x'] | tojson
+                        }},
+                            series: [{
+                                name: "Sales",
+                                data: {{ diffusionData['dds'] | tojson }}
+                            }],
+                            labels: {{ diffusionData['labels'] | tojson }}
+                        };
+
+                        var options = {
+                            chart: {
+                                type: 'area'
+                            },
+                            series: chartData.series,
+                            xaxis: {
+                                
+                                categories: chartData.labels
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Sales'
+                                },
+                            },
+                            colors: ['#6c6cd1'],
+                            style: {
+                                fontSize: '1px'
+                            },
+
+                        };
+
+                        new ApexCharts(document.querySelector("#diffusionChart"), options).render();
+                    });                  
+                    </script>
+
+                </div>
+            </div>
+        </div>
+        <!-- Diffusion Curve Ends -->
+
+        <!-- New Demand Curve Starts -->
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">New Demand Curve</h5>
+
+                    <!-- Line Chart -->
+                    <div id="demandChart"></div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+                            const chartData = {
+                                y_pos: {{ demandData['y_pos'] | tojson
+                        }},
+                            series: [{
+                                name: "Sales",
+                                data: {{ demandData['performance'] | tojson }}
+                            }],
+                            labels: {{ demandData['labelData'] | tojson }}
+                        };
+
+                        var options = {
+                            chart: {
+                                type: 'bar',
+                                distributed: true
+                            },
+                            series: chartData.series,
+                            xaxis: {
+                                
+                                categories: chartData.labels
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Sales'
+                                },
+                            },
+                            colors: ['#6c6cd1', '#FFAA20']
+                        };
+                        new ApexCharts(document.querySelector("#demandChart"), options).render();
+                    });                  
+                    </script>
+
+                </div>
+            </div>
+        </div>
+        <!-- Demand Curve Ends -->
+
+        <!-- Combined Sales Starts -->
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"> Sales Report</h5>
+
+                    <select name="dropdown" id="dropdown">
+                        <option value="combinedChart" selected>Combined Sales Data</option>
+                        <option value="salesChart">Original Sales Data</option>
+                        <option value="forcastChart">Forcast Sales Data</option>
+                    </select>
+
+                    <div id="combinedChart" class="chart"></div>
+                    <div id="salesChart" class="chart"></div>
+                    <div id="forcastChart" class="chart"></div>
+                    <script>
+                        let dropdown = document.getElementById("dropdown");
+                        let charts = document.querySelectorAll(".chart");
+
+
+                        dropdown.addEventListener("change", function () {
+                            let selectedValue = dropdown.value;
+                            charts.forEach(chart => chart.classList.remove("active"));
+                            let selectedChart = document.getElementById(selectedValue);
+                            selectedChart.classList.add("active");
+
+                            if (selectedValue === "combinedChart") {
+                                Promise.all([
+                                    d3.csv('static/sales_data.csv'),
+                                    d3.csv('static/forcast_data.csv')
+                                ]).then(function (data) {
+                                    let salesData = [];
+                                    let parseDate = d3.timeParse('%Y-%m-%d');
+                                    for (let i = 0; i < data[0].length; i++) {
+                                        let date = parseDate(data[0][i].Month);
+                                        let sales = data[0][i].Sales;
+                                        salesData.push([date, sales]);
+                                    }
+
+                                    let forcastData = [];
+                                    let parseForcastDate = d3.timeParse('%d-%m-%Y');
+                                    for (let i = 0; i < data[1].length; i++) {
+                                        let date = parseForcastDate(data[1][i].Year);
+                                        let forcast = data[1][i].Forcast;
+                                        forcastData.push([date, forcast]);
+                                    }
+
+                                    let options = {
+                                        chart: {
+                                            type: 'area',
+                                            stacked: false,
+                                            zoom: {
+                                                type: 'x',
+                                                enabled: true,
+                                                autoScaleYaxis: true
+                                            },
+                                            toolbar: {
+                                                autoSelected: 'zoom'
+                                            }
+                                        },
+                                        dataLabels: {
+                                            enabled: false
+                                        },
+                                        markers: {
+                                            size: 0,
+                                        },
+                                        fill: {
+                                            type: 'gradient',
+                                            gradient: {
+                                                shadeIntensity: 1,
+                                                inverseColors: false,
+                                                opacityFrom: 0.5,
+                                                opacityTo: 0,
+                                                stops: [0, 90, 100]
+                                            },
+                                        },
+                                        series: [{
+                                            name: "Sales",
+                                            data: salesData
+                                        }, {
+                                            name: "Forcast",
+                                            data: forcastData
+                                        }],
+                                        xaxis: {
+                                            
+                                            type: 'datetime',
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return new Date(value).getFullYear();
+                                                }
+                                            },
+                                            title: {
+                                                text: 'Year'
+                                            },
+                                        },
+                                        yaxis: {
+                                            title: {
+                                                text: 'Sales'
+                                            },
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return Math.floor(value);
+                                                }
+                                            }
+                                        },
+                                        tooltip: {
+                                            intersect: false,
+                                            titleFontSize: 20,
+                                            x: {
+                                                format: 'yyyy',
+                                                formatter: function (value) {
+                                                    return new Date(value).getFullYear();
+                                                }
+                                            },
+                                            y: {
+                                                formatter: function (value, { seriesIndex, dataPointIndex, w }) {
+                                                    const seriesName = w.config.series[seriesIndex].name;
+                                                    const formattedValue = ": " + value;
+                                                    return formattedValue;
+                                                }
+                                            }
+                                        },
+                                        grid: {
+                                            borderColor: '#6c6cd1'
+                                        },
+                                        colors: ['#6c6cd1', '#FFAA20']
+                                    };
+
+
+
+                                    let chart = new ApexCharts(document.getElementById('combinedChart'), options);
+
+                                    chart.render();
+                                });
+
+                            } if (selectedValue === "salesChart") {
+
+                                d3.csv('static/sales_data.csv').then(function (loadedData) {
+                                    let data = [];
+                                    let parseDate = d3.timeParse('%Y-%m-%d');
+                                    for (let i = 0; i < loadedData.length; i++) {
+                                        let date = parseDate(loadedData[i].Month);
+                                        let sales = loadedData[i].Sales;
+                                        data.push([date, sales]);
+                                    }
+
+                                    let options = {
+                                        chart: {
+                                            type: 'area',
+                                            stacked: false,
+                                            zoom: {
+                                                type: 'x',
+                                                enabled: true,
+                                                autoScaleYaxis: true
+                                            },
+                                            toolbar: {
+                                                autoSelected: 'zoom'
+                                            }
+                                        },
+                                        dataLabels: {
+                                            enabled: false
+                                        },
+                                        markers: {
+                                            size: 0,
+                                        },
+                                        fill: {
+                                            type: 'gradient',
+                                            gradient: {
+                                                shadeIntensity: 1,
+                                                inverseColors: false,
+                                                opacityFrom: 0.5,
+                                                opacityTo: 0,
+                                                stops: [0, 90, 100]
+                                            },
+                                        },
+                                        series: [{
+                                            name: "Sales",
+                                            data: data
+                                        }],
+                                        xaxis: {
+                                            type: 'datetime',
+                                            
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return new Date(value).getFullYear();
+                                                }
+                                            },
+                                            title: {
+                                                text: 'Year'
+                                            },
+                                        },
+                                        yaxis: {
+                                            title: {
+                                                text: 'Sales'
+                                            },
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return Math.floor(value);
+                                                }
+                                            }
+                                        },
+                                        tooltip: {
+                                            intersect: false,
+                                            titleFontSize: 20,
+                                            x: {
+                                                format: 'yyyy',
+                                                formatter: function (value) {
+                                                    return new Date(value).getFullYear();
+                                                }
+                                            },
+                                            y: {
+                                                formatter: function (value, { seriesIndex, dataPointIndex, w }) {
+                                                    const seriesName = w.config.series[seriesIndex].name;
+                                                    const formattedValue = ": " + value;
+                                                    return formattedValue;
+                                                }
+                                            }
+                                        },
+                                        grid: {
+                                            borderColor: '#6c6cd1'
+                                        },
+                                        colors: ['#6c6cd1']
+
+                                    };
+
+
+                                    let chart = new ApexCharts(document.getElementById('salesChart'), options);
+                                    chart.render();
+
+
+                                });
+
+                            }
+                            if (selectedValue === "forcastChart") {
+                                d3.csv('static/forcast_data.csv').then(function (loadedData) {
+                                    let data = [];
+                                    let parseDate = d3.timeParse('%d-%m-%Y');
+                                    for (let i = 0; i < loadedData.length; i++) {
+                                        let date = parseDate(loadedData[i].Year);
+                                        let sales = loadedData[i].Forcast;
+                                        data.push([date, sales]);
+                                    }
+
+                                    let options = {
+                                        chart: {
+                                            type: 'area',
+                                            stacked: false,
+                                            zoom: {
+                                                type: 'x',
+                                                enabled: true,
+                                                autoScaleYaxis: true
+                                            },
+                                            toolbar: {
+                                                autoSelected: 'zoom'
+                                            }
+                                        },
+                                        dataLabels: {
+                                            enabled: false
+                                        },
+                                        markers: {
+                                            size: 0,
+                                        },
+                                        fill: {
+                                            type: 'gradient',
+                                            gradient: {
+                                                shadeIntensity: 1,
+                                                inverseColors: false,
+                                                opacityFrom: 0.5,
+                                                opacityTo: 0,
+                                                stops: [0, 90, 100]
+                                            },
+                                        },
+                                        series: [{
+                                            name: "Sales",
+                                            data: data
+                                        }],
+                                        xaxis: {
+                                            type: 'datetime',
+                                            
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return new Date(value).getFullYear();
+                                                }
+                                            },
+                                            title: {
+                                                text: 'Year'
+                                            },
+                                        },
+                                        yaxis: {
+                                            title: {
+                                                text: 'Sales'
+                                            },
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return Math.floor(value);
+                                                }
+                                            }
+                                        },
+                                        tooltip: {
+                                            intersect: false,
+                                            titleFontSize: 20,
+                                            x: {
+                                                format: 'yyyy',
+                                                formatter: function (value) {
+                                                    return new Date(value).getFullYear();
+                                                }
+                                            },
+                                            y: {
+                                                formatter: function (value, { seriesIndex, dataPointIndex, w }) {
+                                                    const seriesName = w.config.series[seriesIndex].name;
+                                                    const formattedValue = ": " + value;
+                                                    return formattedValue;
+                                                }
+                                            }
+                                        },
+                                        grid: {
+                                            borderColor: '#6c6cd1'
+                                        },
+                                        colors: ['#FFAA20']
+
+                                    };
+
+                                    let chart = new ApexCharts(document.getElementById('forcastChart'), options);
+                                    chart.render();
+                                });
+
+                            }
+                        });
+
+                    </script>
+
+                </div>
+            </div>
+        </div>
+        <!-- Combined Sales Starts -->
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

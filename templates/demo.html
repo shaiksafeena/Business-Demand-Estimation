@@ -1,0 +1,129 @@
+{% extends 'base1.html' %}
+
+{% block main %}
+<div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/demo">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
+
+
+<section class="section">
+    <div class="row">
+
+        <!-- Combined Sales Starts -->
+
+
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"> Demo Stuff</h5>
+                    <div id="printpage">
+                        <div class="page-content">
+                            <div class="container">
+                                <div class="cover shadow-lg bg-white">
+                                    <div class="cover-bg p-3 p-lg-4 text-white">
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-5">
+                                                <div class="avatar hover-effect bg-white shadow-sm p-1"><img
+                                                        src="static\assets\img\avatar.jpg" width="200" height="200" /></div>
+                                            </div>
+                                            <div class="col-lg-8 col-md-7 text-center text-md-start">
+                                                <h2 class="h1 mt-2" data-aos="fade-left" data-aos-delay="0">Joyce
+                                                    Harrison</h2>
+                                                <p data-aos="fade-left" data-aos-delay="100">Graphic Designer & Web
+                                                    Developer</p>
+                                                <div class="d-print-none" data-aos="fade-left" data-aos-delay="200">
+                                                    <button class="btn btn-light text-dark shadow-sm mt-1 me-1"
+                                                        onclick="printDiv()">Generate PDF</button>
+
+                                                    <a class="btn btn-success shadow-sm mt-1" href="#contact">Hire
+                                                        Me</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="about-section pt-4 px-3 px-lg-4 mt-1">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h2 class="h3 mb-3">About Me</h2>
+                                                <p>Hello! I'm Joyce Harrison. I am passionate about UI/UX design and Web
+                                                    Design. I am a
+                                                    skilled
+                                                    Front-end
+                                                    Developer and master of Graphic Design tools such as Photoshop and
+                                                    Sketch.</p>
+                                            </div>
+                                            <div class="col-md-5 offset-md-1">
+                                                <div class="row mt-2">
+                                                    <div class="col-sm-4">
+                                                        <div class="pb-1">Age</div>
+                                                    </div>
+                                                    <div class="col-sm-8">
+                                                        <div class="pb-1 text-secondary">28</div>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="pb-1">Email</div>
+                                                    </div>
+                                                    <div class="col-sm-8">
+                                                        <div class="pb-1 text-secondary">Joyce@company.com</div>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="pb-1">Phone</div>
+                                                    </div>
+                                                    <div class="col-sm-8">
+                                                        <div class="pb-1 text-secondary">+0718-111-0011</div>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="pb-1">Address</div>
+                                                    </div>
+                                                    <div class="col-sm-8">
+                                                        <div class="pb-1 text-secondary">140, City Center, New York,
+                                                            U.S.A</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function printDiv() {
+        // Get the content of the div
+        var divContent = document.getElementById("printpage").innerHTML;
+        // Create a new window
+        var printWindow = window.open('', '', 'height=500,width=700');
+        // Set the print-specific CSS
+        printWindow.document.write('<html><head><title>Print Div</title>');
+        printWindow.document.write('<link rel="stylesheet" href="print.css" type="text/css" />');
+        printWindow.document.write('</head><body>');
+        // Add the div content to the window
+        printWindow.document.write(divContent);
+        printWindow.document.write('</body></html>');
+        // Print the window
+        printWindow.print();
+        // Close the window
+        printWindow.close();
+      }
+    </script>
+
+
+
+</section><!-- End Section Page -->
+
+
+{% endblock %}

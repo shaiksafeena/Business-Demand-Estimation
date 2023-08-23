@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/demo">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section">
+    <div class="row">
+
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Line Chart</h5>
+
+                    <!-- Line Chart -->
+                    <canvas id="lineChart" style="max-height: 400px;"></canvas>
+                    <script src="https://d3js.org/d3.v6.min.js"></script>
+
+                   
+                    <!-- End Line CHart -->
+                </div>
+            </div>
+        </div>
+        <!-- End of One Line chart -->
+
+
+    </div>
+</section><!-- End Section Page -->
+
+
+{% endblock %}
